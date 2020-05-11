@@ -1,0 +1,26 @@
+apiVersion: "v3.vmware.com/v1"
+kind: Auth
+metadata:
+  name: auths.v3.vmware.com
+spec:
+  authmgmt:
+    global_permission_list:
+      - principal:
+         name: "100"
+         group: "200"
+      - principal:
+         name: "p4"
+         group: "g4"   
+    local_permission_list:
+      - principal:
+         name: "l2"
+         group: "lg2"
+      - principal:
+         name: "20"
+         group: "20"
+      - principal:
+         name: "10"
+         group: "10"
+    ssh: "true"
+    smtp: "true"
+    ftp: "10.10.10.10"
