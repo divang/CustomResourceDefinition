@@ -7,7 +7,7 @@
 > https://docs.docker.com/docker-for-mac/
 
 - Run kubemini
-| minikube start --driver=docker
+> minikube start --driver=docker
 
 Compile Code
 > mvn clean install
