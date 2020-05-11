@@ -3,7 +3,7 @@
 Install kubemini
 > https://kubernetes.io/docs/tasks/tools/install-minikube/
 
-Install Docker and it should be in running state
+Install Docker. Docker Server should be in running state
 > https://docs.docker.com/docker-for-mac/
 
 Run kubemini
