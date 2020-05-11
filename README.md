@@ -1,6 +1,8 @@
 # This code base demonstrates how to write a Kubernetes Custom Resource Controller for Custom Resource (CRD)
 
-- Install kubemini 
+- Install kubemini + docker
+> https://kubernetes.io/docs/tasks/tools/install-minikube/
+> https://docs.docker.com/docker-for-mac/
 
 Compile Code
 > mvn clean install
