@@ -2,6 +2,7 @@ package io.fabric8.custom.operator.authcrd;
 
 public class ServiceSpec {
 
+   //ApplianceManagment
    private Object authmgmt;
 
    public Object getAuthmgmt() {

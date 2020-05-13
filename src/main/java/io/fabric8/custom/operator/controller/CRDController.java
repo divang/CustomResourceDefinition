@@ -19,7 +19,7 @@ import io.fabric8.kubernetes.client.informers.SharedIndexInformer;
 import io.fabric8.kubernetes.client.informers.cache.Cache;
 import io.fabric8.kubernetes.client.informers.cache.Lister;
 
-public class CRDAuthController {
+public class CRDController {
    private BlockingQueue<String> workqueue;
    private SharedIndexInformer<CustomService> customServiceInformer;
    private SharedIndexInformer<CustomResourceDefinition> crdInformer;
@@ -28,10 +28,10 @@ public class CRDAuthController {
    private KubernetesClient kubernetesClient;
    private MixedOperation<CustomService, CustomServiceList, DoneableCustomService, Resource<CustomService, DoneableCustomService>> customServiceClient;
    public static Logger logger =
-         Logger.getLogger(CRDAuthController.class.getName());
+         Logger.getLogger(CRDController.class.getName());
    public static String APP_LABEL = "app";
 
-   public CRDAuthController(KubernetesClient kubernetesClient,
+   public CRDController(KubernetesClient kubernetesClient,
          MixedOperation<CustomService, CustomServiceList, DoneableCustomService, Resource<CustomService, DoneableCustomService>> customServiceClient,
          SharedIndexInformer<CustomResourceDefinition> crdInformer,
          SharedIndexInformer<CustomService> customServiceInformer,
@@ -133,6 +133,7 @@ public class CRDAuthController {
       System.out.println("****************************************");
       System.out.println("***** Handling Auth Config changes *****");
       System.out.println("Custom Service Object :" + customService);
+
       System.out.println("****************************************");
    }
 
@@ -173,11 +174,11 @@ public class CRDAuthController {
       return null;
    }
 
-   private Object getCurrentObservedState() {
+   public Object getCurrentObservedState() {
       CustomServiceList customServiceList =
             customServiceClient.inAnyNamespace().list();
       logger.log(Level.INFO,
             "Current Observed --->" + customServiceList.getItems().get(0));
-      return null;
+      return customServiceList.getItems().get(0);
    }
 }

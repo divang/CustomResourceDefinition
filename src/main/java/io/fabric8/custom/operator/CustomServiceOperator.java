@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import io.fabric8.custom.operator.authcrd.CustomService;
 import io.fabric8.custom.operator.authcrd.CustomServiceList;
 import io.fabric8.custom.operator.authcrd.DoneableCustomService;
-import io.fabric8.custom.operator.controller.CRDAuthController;
+import io.fabric8.custom.operator.controller.CRDController;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionBuilder;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionList;
@@ -22,13 +22,21 @@ import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
  * Main Class for Operator, you can run this sample using this command:
  *
  * mvn exec:java
- * -Dexec.mainClass=io.fabric8.custom.operator.CustomServiceOperatorMain
+ * -Dexec.mainClass=io.fabric8.custom.operator.CustomServiceOperator
  */
-public class CustomServiceOperatorMain {
+public class CustomServiceOperator {
    public static Logger logger =
-         Logger.getLogger(CustomServiceOperatorMain.class.getName());
+         Logger.getLogger(CustomServiceOperator.class.getName());
+
+   private CRDController customServiceController;
 
    public static void main(String args[]) {
+      CustomServiceOperator customServiceOperatorMain =
+            new CustomServiceOperator();
+      customServiceOperatorMain.start();
+   }
+
+   public void start() {
       try (KubernetesClient client = new DefaultKubernetesClient()) {
          String namespace = client.getNamespace();
          if (namespace == null) {
@@ -41,15 +49,16 @@ public class CustomServiceOperatorMain {
 
          CustomResourceDefinition customServiceCustomResourceDefinition =
                new CustomResourceDefinitionBuilder().withNewMetadata()
-                     .withName("auths.v3.vmware.com").endMetadata()
-                     .withNewSpec().withGroup("v3.vmware.com").withVersion("v1")
-                     .withNewNames().withKind("Auth").withPlural("auths")
-                     .endNames().withScope("Namespaced").endSpec().build();
+                     .withName("testresources.k8.poc.github.com").endMetadata()
+                     .withNewSpec().withGroup("k8.poc.github.com")
+                     .withVersion("v1").withNewNames().withKind("TestResource")
+                     .withPlural("testresources").endNames()
+                     .withScope("Namespaced").endSpec().build();
 
          CustomResourceDefinitionContext customServiceCustomResourceDefinitionContext =
                new CustomResourceDefinitionContext.Builder().withVersion("v1")
-                     .withScope("Namespaced").withGroup("v3.vmware.com")
-                     .withPlural("auths").build();
+                     .withScope("Namespaced").withGroup("k8.poc.github.com")
+                     .withPlural("testresources").build();
 
          SharedInformerFactory informerFactory = client.informers();
 
@@ -66,8 +75,8 @@ public class CustomServiceOperatorMain {
                      customServiceCustomResourceDefinitionContext,
                      CustomService.class, CustomServiceList.class,
                      10 * 60 * 1000);
-         CRDAuthController customServiceController = new CRDAuthController(
-               client, customServiceClient, crdSharedIndexInformer,
+         customServiceController = new CRDController(client,
+               customServiceClient, crdSharedIndexInformer,
                customServiceSharedIndexInformer, namespace);
 
          customServiceController.create();
@@ -75,5 +84,9 @@ public class CustomServiceOperatorMain {
 
          customServiceController.run();
       }
+   }
+
+   public Object getCurrentState() {
+      return customServiceController.getCurrentObservedState();
    }
 }

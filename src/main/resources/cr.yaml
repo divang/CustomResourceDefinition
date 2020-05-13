@@ -1,0 +1,29 @@
+apiVersion: "k8.poc.github.com/v1"
+kind: TestResource
+metadata:
+  name: testresources.k8.poc.github.com
+spec:
+  testmgmt:
+    global_permission_list:
+      - principal:
+         name: "400"
+         group: "500"
+      - principal:
+         name: "600"
+         group: "800"   
+    local_permission_list:
+      - principal:
+         name: "100"
+         group: "300"
+      - principal:
+         name: "200"
+         group: "200"
+      - principal:
+         name: "100"
+         group: "100"
+    ssh: "false"
+    smtp: "true"
+    ftp: "198.10.10.10"
+    rsync: "true"
+    notification: "Off"
+    ntp: "10.10.10.20"
