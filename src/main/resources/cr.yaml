@@ -27,3 +27,4 @@ spec:
     rsync: "true"
     notification: "Off"
     ntp: "10.10.10.20"
+    time_zone: "IST"

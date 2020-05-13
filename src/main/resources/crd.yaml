@@ -55,7 +55,9 @@ spec:
                   ntp: 
                     type: string
                   sftp:
-                    type: string                                   
+                    type: string
+                  time_zone:
+                    type: string                                     
   scope: Namespaced
   names:
     plural: testresources

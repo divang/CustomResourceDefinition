@@ -1,4 +1,4 @@
-package io.fabric8.custom.services;
+package com.example.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

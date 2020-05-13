@@ -3,18 +3,20 @@ package io.fabric8.custom.operator.crd;
 public class ServiceSpec {
 
    //ApplianceManagment
-   private Object authmgmt;
+   private Object testmgmt;
 
-   public Object getAuthmgmt() {
-      return authmgmt;
+
+   public Object getTestmgmt() {
+      return testmgmt;
    }
 
-   public void setAuthmgmt(Object authmgmt) {
-      this.authmgmt = authmgmt;
+   public void setTestmgmt(Object testmgmt) {
+      this.testmgmt = testmgmt;
    }
 
    @Override
    public String toString() {
-      return authmgmt.toString();
+      // TODO Auto-generated method stub
+      return testmgmt.toString();
    }
 }

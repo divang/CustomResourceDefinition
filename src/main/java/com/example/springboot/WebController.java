@@ -1,4 +1,4 @@
-package io.fabric8.custom.services;
+package com.example.springboot;
 
 import java.io.IOException;
 
