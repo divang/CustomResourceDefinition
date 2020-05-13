@@ -13,12 +13,12 @@ Compile Code
 > mvn clean install
 
 Run Kubernetes Custom Resource Controller
-> mvn exec:java -Dexec.mainClass=io.fabric8.custom.operator.CustomServiceOperatorMain
+> mvn exec:java -Dexec.mainClass=io.fabric8.custom.operator.CustomServiceOperator
 
 Create Custom Resource Definition (CRD) 
-> kubectl apply -f src/main/resources/auth-crd.yaml
+> kubectl apply -f src/main/resources/crd.yaml
 
 Create Custom Resource Object 
-> kubectl apply -f src/main/resources/auth-cr.yaml
+> kubectl apply -f src/main/resources/cr.yaml
 
 See the console output in above run controller
