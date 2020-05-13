@@ -1,4 +1,4 @@
-package io.fabric8.custom.operator.authcrd;
+package io.fabric8.custom.operator.crd;
 
 import io.fabric8.kubernetes.client.CustomResource;
 

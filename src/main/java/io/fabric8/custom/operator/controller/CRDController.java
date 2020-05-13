@@ -6,9 +6,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.fabric8.custom.operator.authcrd.CustomService;
-import io.fabric8.custom.operator.authcrd.CustomServiceList;
-import io.fabric8.custom.operator.authcrd.DoneableCustomService;
+import io.fabric8.custom.operator.crd.CustomService;
+import io.fabric8.custom.operator.crd.CustomServiceList;
+import io.fabric8.custom.operator.crd.DoneableCustomService;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.KubernetesClient;

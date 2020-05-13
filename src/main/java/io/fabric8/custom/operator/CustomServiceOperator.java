@@ -3,10 +3,10 @@ package io.fabric8.custom.operator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.fabric8.custom.operator.authcrd.CustomService;
-import io.fabric8.custom.operator.authcrd.CustomServiceList;
-import io.fabric8.custom.operator.authcrd.DoneableCustomService;
 import io.fabric8.custom.operator.controller.CRDController;
+import io.fabric8.custom.operator.crd.CustomService;
+import io.fabric8.custom.operator.crd.CustomServiceList;
+import io.fabric8.custom.operator.crd.DoneableCustomService;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionBuilder;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionList;
