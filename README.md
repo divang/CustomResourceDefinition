@@ -13,7 +13,7 @@ Compile Code
 > mvn clean install
 
 Run Kubernetes Custom Resource Controller
-> mvn exec:java -Dexec.mainClass=io.fabric8.custom.operator.CustomServiceOperator
+> mvn spring-boot:run
 
 Create Custom Resource Definition (CRD) 
 > kubectl apply -f src/main/resources/crd.yaml
