@@ -1,4 +1,4 @@
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: desiredstates.ipm.k8.vmware.com
@@ -8,13 +8,21 @@ spec:
   - name: v1
     served: true
     storage: true
-    schema:
-      openAPIV3Schema:
-        type: object
-        properties:
-          spec:
-            type: object
-            properties:
+  scope: Namespaced
+  names:
+    plural: desiredstates
+    singular: desiredstate
+    kind: Desiredstate
+    shortNames:
+    - ds
+  preserveUnknownFields: false
+  validation:
+    openAPIV3Schema:
+      type: object
+      properties:
+        spec:
+          type: object
+          properties:
               name:
                 type: string
               description:
@@ -240,10 +248,3 @@ spec:
                         properties:
                           enabled:
                             type: boolean
-  scope: Namespaced
-  names:
-    plural: desiredstates
-    singular: desiredstate
-    kind: Desiredstate
-    shortNames:
-    - ds

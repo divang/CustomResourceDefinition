@@ -1,22 +1,20 @@
 package io.fabric8.custom.operator.crd;
 
 public class ServiceSpec {
-
    //ApplianceManagment
-   private Object testmgmt;
+   private Object desired_state;
 
 
-   public Object getTestmgmt() {
-      return testmgmt;
+   public Object getDesired_state() {
+      return desired_state;
    }
 
-   public void setTestmgmt(Object testmgmt) {
-      this.testmgmt = testmgmt;
+   public void setDesired_state(Object desired_state) {
+      this.desired_state = desired_state;
    }
 
    @Override
    public String toString() {
-      // TODO Auto-generated method stub
-      return testmgmt.toString();
+      return desired_state.toString();
    }
 }

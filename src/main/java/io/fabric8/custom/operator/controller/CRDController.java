@@ -6,6 +6,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vmware.ipm.plugins.AppliancePlugin;
+
 import io.fabric8.custom.operator.crd.CustomService;
 import io.fabric8.custom.operator.crd.CustomServiceList;
 import io.fabric8.custom.operator.crd.DoneableCustomService;
@@ -27,15 +29,14 @@ public class CRDController {
    private Lister<CustomResourceDefinition> crdLister;
    private KubernetesClient kubernetesClient;
    private MixedOperation<CustomService, CustomServiceList, DoneableCustomService, Resource<CustomService, DoneableCustomService>> customServiceClient;
-   public static Logger logger =
-         Logger.getLogger(CRDController.class.getName());
+   public static Logger logger = Logger.getLogger(CRDController.class.getName());
    public static String APP_LABEL = "app";
+   public AppliancePlugin appliancePlugin = new AppliancePlugin();
 
    public CRDController(KubernetesClient kubernetesClient,
          MixedOperation<CustomService, CustomServiceList, DoneableCustomService, Resource<CustomService, DoneableCustomService>> customServiceClient,
          SharedIndexInformer<CustomResourceDefinition> crdInformer,
-         SharedIndexInformer<CustomService> customServiceInformer,
-         String namespace) {
+         SharedIndexInformer<CustomService> customServiceInformer, String namespace) {
       this.kubernetesClient = kubernetesClient;
       this.customServiceClient = customServiceClient;
       this.customServiceLister =
@@ -47,53 +48,51 @@ public class CRDController {
    }
 
    public void create() {
-      customServiceInformer
-            .addEventHandler(new ResourceEventHandler<CustomService>() {
-               @Override
-               public void onAdd(CustomService customService) {
-                  enqueueCustomService(customService);
-               }
+      customServiceInformer.addEventHandler(new ResourceEventHandler<CustomService>() {
+         @Override
+         public void onAdd(CustomService customService) {
+            enqueueCustomService(customService);
+         }
 
-               @Override
-               public void onUpdate(CustomService customService,
-                     CustomService newCustomService) {
-                  enqueueCustomService(newCustomService);
-               }
+         @Override
+         public void onUpdate(CustomService customService,
+               CustomService newCustomService) {
+            enqueueCustomService(newCustomService);
+         }
 
-               @Override
-               public void onDelete(CustomService customService, boolean b) {
-               }
-            });
+         @Override
+         public void onDelete(CustomService customService, boolean b) {
+         }
+      });
 
-      crdInformer.addEventHandler(
-            new ResourceEventHandler<CustomResourceDefinition>() {
-               @Override
-               public void onAdd(CustomResourceDefinition crd) {
-                  handleCRDObject(crd);
-               }
+      crdInformer.addEventHandler(new ResourceEventHandler<CustomResourceDefinition>() {
+         @Override
+         public void onAdd(CustomResourceDefinition crd) {
+            handleCRDObject(crd);
+         }
 
-               @Override
-               public void onUpdate(CustomResourceDefinition oldPod,
-                     CustomResourceDefinition newPod) {
-                  if (oldPod.getMetadata().getResourceVersion() == newPod
-                        .getMetadata().getResourceVersion()) {
-                     return;
-                  }
-                  handleCRDObject(newPod);
-               }
+         @Override
+         public void onUpdate(CustomResourceDefinition oldPod,
+               CustomResourceDefinition newPod) {
+            if (oldPod.getMetadata().getResourceVersion() == newPod.getMetadata()
+                  .getResourceVersion()) {
+               return;
+            }
+            handleCRDObject(newPod);
+         }
 
-               @Override
-               public void onDelete(CustomResourceDefinition crd, boolean b) {
-               }
-            });
+         @Override
+         public void onDelete(CustomResourceDefinition crd, boolean b) {
+         }
+      });
    }
 
    public void run() {
-      logger.log(Level.INFO, "Starting CustomService controller");
+      logger.log(Level.INFO, "Starting CustomService controller ...");
 
       while (true) {
          try {
-            getCurrentObservedState();
+            //getCurrentObservedState();
             logger.log(Level.INFO, "trying to fetch item from workqueue...");
             if (workqueue.isEmpty()) {
                logger.log(Level.INFO, "Work Queue is empty");
@@ -107,17 +106,21 @@ public class CRDController {
 
             // Get the CustomService resource's name from key which is in format namespace/name
             String name = key.split("/")[1];
-            CustomService customService =
-                  customServiceLister.get(key.split("/")[1]);
+            CustomService customService = customServiceLister.get(key.split("/")[1]);
             if (customService == null) {
-               logger.log(Level.SEVERE, "CustomService " + name
-                     + " in workqueue no longer exists");
+               logger.log(Level.SEVERE,
+                     "CustomService " + name + " in workqueue no longer exists");
                return;
             }
             reconcile(customService);
 
          } catch (InterruptedException interruptedException) {
             logger.log(Level.SEVERE, "controller interrupted..");
+            try {
+               Thread.sleep(5000l);
+            } catch (InterruptedException e) {
+               e.printStackTrace();
+            }
          }
       }
    }
@@ -132,15 +135,16 @@ public class CRDController {
       //handle desire state changes
       System.out.println("****************************************");
       System.out.println("***** Handling Auth Config changes *****");
-      System.out.println("Custom Service Object :" + customService);
-
+      System.out
+            .println("Appliance Object :" + customService.getSpec().getDesired_state());
+      appliancePlugin.apply(customService.getSpec().getDesired_state());
       System.out.println("****************************************");
    }
 
 
    private void enqueueCustomService(CustomService customService) {
-      logger.log(Level.INFO, "enqueueCustomService("
-            + customService.getMetadata().getName() + ")");
+      logger.log(Level.INFO,
+            "enqueueCustomService(" + customService.getMetadata().getName() + ")");
       String key = Cache.metaNamespaceKeyFunc(customService);
       logger.log(Level.INFO, "Going to enqueue key " + key);
       if (key != null || !key.isEmpty()) {
@@ -150,22 +154,19 @@ public class CRDController {
    }
 
    private void handleCRDObject(CustomResourceDefinition crd) {
-      logger.log(Level.INFO,
-            "handleCRDObject(" + crd.getMetadata().getName() + ")");
+      logger.log(Level.INFO, "handleCRDObject(" + crd.getMetadata().getName() + ")");
       OwnerReference ownerReference = getControllerOf(crd);
       if (!ownerReference.getKind().equalsIgnoreCase("CustomService")) {
          return;
       }
-      CustomService customService =
-            customServiceLister.get(ownerReference.getName());
+      CustomService customService = customServiceLister.get(ownerReference.getName());
       if (customService != null) {
          enqueueCustomService(customService);
       }
    }
 
    private OwnerReference getControllerOf(CustomResourceDefinition crd) {
-      List<OwnerReference> ownerReferences =
-            crd.getMetadata().getOwnerReferences();
+      List<OwnerReference> ownerReferences = crd.getMetadata().getOwnerReferences();
       for (OwnerReference ownerReference : ownerReferences) {
          if (ownerReference.getController().equals(Boolean.TRUE)) {
             return ownerReference;
@@ -175,10 +176,9 @@ public class CRDController {
    }
 
    public Object getCurrentObservedState() {
-      CustomServiceList customServiceList =
-            customServiceClient.inAnyNamespace().list();
+      CustomServiceList customServiceList = customServiceClient.inAnyNamespace().list();
       logger.log(Level.INFO,
             "Current Observed --->" + customServiceList.getItems().get(0));
-      return customServiceList.getItems().get(0);
+      return appliancePlugin.getCurrentDesiredState();
    }
 }
